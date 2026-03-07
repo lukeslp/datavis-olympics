@@ -1,0 +1,610 @@
+{
+  "olympics": [
+    {
+      "year": 1896,
+      "host_city": "Athens",
+      "host_country": "Greece",
+      "cancelled": false,
+      "medal_table": [
+        {
+          "rank": 1,
+          "country": "United States",
+          "noc": "USA",
+          "gold": 11,
+          "silver": 7,
+          "bronze": 2,
+          "total": 20
+        },
+        {
+          "rank": 2,
+          "country": "Greece",
+          "noc": "GRE",
+          "gold": 10,
+          "silver": 18,
+          "bronze": 19,
+          "total": 47
+        },
+        {
+          "rank": 3,
+          "country": "Germany",
+          "noc": "GER",
+          "gold": 6,
+          "silver": 5,
+          "bronze": 2,
+          "total": 13
+        },
+        {
+          "rank": 4,
+          "country": "France",
+          "noc": "FRA",
+          "gold": 5,
+          "silver": 4,
+          "bronze": 2,
+          "total": 11
+        },
+        {
+          "rank": 5,
+          "country": "Great Britain",
+          "noc": "GBR",
+          "gold": 2,
+          "silver": 3,
+          "bronze": 2,
+          "total": 7
+        },
+        {
+          "rank": 6,
+          "country": "Hungary",
+          "noc": "HUN",
+          "gold": 2,
+          "silver": 1,
+          "bronze": 3,
+          "total": 6
+        },
+        {
+          "rank": 7,
+          "country": "Austria",
+          "noc": "AUT",
+          "gold": 2,
+          "silver": 1,
+          "bronze": 2,
+          "total": 5
+        },
+        {
+          "rank": 8,
+          "country": "Australia",
+          "noc": "AUS",
+          "gold": 2,
+          "silver": 0,
+          "bronze": 0,
+          "total": 2
+        },
+        {
+          "rank": 9,
+          "country": "Denmark",
+          "noc": "DEN",
+          "gold": 1,
+          "silver": 2,
+          "bronze": 3,
+          "total": 6
+        },
+        {
+          "rank": 10,
+          "country": "Switzerland",
+          "noc": "SUI",
+          "gold": 1,
+          "silver": 2,
+          "bronze": 0,
+          "total": 3
+        }
+      ]
+    },
+    {
+      "year": 1900,
+      "host_city": "Paris",
+      "host_country": "France",
+      "cancelled": false,
+      "medal_table": [
+        {
+          "rank": 1,
+          "country": "France",
+          "noc": "FRA",
+          "gold": 26,
+          "silver": 41,
+          "bronze": 34,
+          "total": 101
+        },
+        {
+          "rank": 2,
+          "country": "United States",
+          "noc": "USA",
+          "gold": 19,
+          "silver": 14,
+          "bronze": 14,
+          "total": 47
+        },
+        {
+          "rank": 3,
+          "country": "Great Britain",
+          "noc": "GBR",
+          "gold": 15,
+          "silver": 6,
+          "bronze": 9,
+          "total": 30
+        },
+        {
+          "rank": 4,
+          "country": "Belgium",
+          "noc": "BEL",
+          "gold": 5,
+          "silver": 5,
+          "bronze": 5,
+          "total": 15
+        },
+        {
+          "rank": 5,
+          "country": "Switzerland",
+          "noc": "SUI",
+          "gold": 6,
+          "silver": 2,
+          "bronze": 1,
+          "total": 9
+        },
+        {
+          "rank": 6,
+          "country": "Germany",
+          "noc": "GER",
+          "gold": 4,
+          "silver": 2,
+          "bronze": 2,
+          "total": 8
+        },
+        {
+          "rank": 7,
+          "country": "Italy",
+          "noc": "ITA",
+          "gold": 2,
+          "silver": 2,
+          "bronze": 0,
+          "total": 4
+        },
+        {
+          "rank": 8,
+          "country": "Australia",
+          "noc": "AUS",
+          "gold": 2,
+          "silver": 0,
+          "bronze": 3,
+          "total": 5
+        },
+        {
+          "rank": 9,
+          "country": "Denmark",
+          "noc": "DEN",
+          "gold": 1,
+          "silver": 3,
+          "bronze": 2,
+          "total": 6
+        },
+        {
+          "rank": 10,
+          "country": "Hungary",
+          "noc": "HUN",
+          "gold": 1,
+          "silver": 2,
+          "bronze": 2,
+          "total": 5
+        }
+      ]
+    },
+    {
+      "year": 1916,
+      "host_city": "Berlin",
+      "host_country": "Germany",
+      "cancelled": true,
+      "reason": "World War I",
+      "medal_table": []
+    },
+    {
+      "year": 1980,
+      "host_city": "Moscow",
+      "host_country": "Soviet Union",
+      "cancelled": false,
+      "notes": "US-led boycott (65 nations absent)",
+      "medal_table": [
+        {
+          "rank": 1,
+          "country": "Soviet Union",
+          "noc": "URS",
+          "gold": 80,
+          "silver": 69,
+          "bronze": 46,
+          "total": 195
+        },
+        {
+          "rank": 2,
+          "country": "East Germany",
+          "noc": "GDR",
+          "gold": 47,
+          "silver": 37,
+          "bronze": 42,
+          "total": 126
+        },
+        {
+          "rank": 3,
+          "country": "Bulgaria",
+          "noc": "BUL",
+          "gold": 8,
+          "silver": 16,
+          "bronze": 17,
+          "total": 41
+        },
+        {
+          "rank": 4,
+          "country": "Cuba",
+          "noc": "CUB",
+          "gold": 8,
+          "silver": 7,
+          "bronze": 5,
+          "total": 20
+        },
+        {
+          "rank": 5,
+          "country": "Italy",
+          "noc": "ITA",
+          "gold": 8,
+          "silver": 3,
+          "bronze": 4,
+          "total": 15
+        },
+        {
+          "rank": 6,
+          "country": "Hungary",
+          "noc": "HUN",
+          "gold": 7,
+          "silver": 10,
+          "bronze": 15,
+          "total": 32
+        },
+        {
+          "rank": 7,
+          "country": "Romania",
+          "noc": "ROU",
+          "gold": 6,
+          "silver": 6,
+          "bronze": 13,
+          "total": 25
+        },
+        {
+          "rank": 8,
+          "country": "France",
+          "noc": "FRA",
+          "gold": 6,
+          "silver": 5,
+          "bronze": 3,
+          "total": 14
+        },
+        {
+          "rank": 9,
+          "country": "Great Britain",
+          "noc": "GBR",
+          "gold": 5,
+          "silver": 7,
+          "bronze": 9,
+          "total": 21
+        },
+        {
+          "rank": 10,
+          "country": "Poland",
+          "noc": "POL",
+          "gold": 3,
+          "silver": 14,
+          "bronze": 15,
+          "total": 32
+        }
+      ]
+    },
+    {
+      "year": 2008,
+      "host_city": "Beijing",
+      "host_country": "China",
+      "cancelled": false,
+      "medal_table": [
+        {
+          "rank": 1,
+          "country": "China",
+          "noc": "CHN",
+          "gold": 48,
+          "silver": 22,
+          "bronze": 30,
+          "total": 100
+        },
+        {
+          "rank": 2,
+          "country": "United States",
+          "noc": "USA",
+          "gold": 36,
+          "silver": 39,
+          "bronze": 37,
+          "total": 112
+        },
+        {
+          "rank": 3,
+          "country": "Russia",
+          "noc": "RUS",
+          "gold": 24,
+          "silver": 13,
+          "bronze": 23,
+          "total": 60
+        },
+        {
+          "rank": 4,
+          "country": "Great Britain",
+          "noc": "GBR",
+          "gold": 19,
+          "silver": 13,
+          "bronze": 19,
+          "total": 51
+        },
+        {
+          "rank": 5,
+          "country": "Germany",
+          "noc": "GER",
+          "gold": 16,
+          "silver": 11,
+          "bronze": 14,
+          "total": 41
+        },
+        {
+          "rank": 6,
+          "country": "Australia",
+          "noc": "AUS",
+          "gold": 14,
+          "silver": 15,
+          "bronze": 17,
+          "total": 46
+        },
+        {
+          "rank": 7,
+          "country": "South Korea",
+          "noc": "KOR",
+          "gold": 13,
+          "silver": 11,
+          "bronze": 8,
+          "total": 32
+        },
+        {
+          "rank": 8,
+          "country": "Japan",
+          "noc": "JPN",
+          "gold": 9,
+          "silver": 8,
+          "bronze": 8,
+          "total": 25
+        },
+        {
+          "rank": 9,
+          "country": "Italy",
+          "noc": "ITA",
+          "gold": 8,
+          "silver": 9,
+          "bronze": 10,
+          "total": 27
+        },
+        {
+          "rank": 10,
+          "country": "France",
+          "noc": "FRA",
+          "gold": 7,
+          "silver": 16,
+          "bronze": 20,
+          "total": 43
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "host_city": "Paris",
+      "host_country": "France",
+      "cancelled": false,
+      "medal_table": [
+        {
+          "rank": 1,
+          "country": "United States",
+          "noc": "USA",
+          "gold": 40,
+          "silver": 44,
+          "bronze": 42,
+          "total": 126
+        },
+        {
+          "rank": 2,
+          "country": "China",
+          "noc": "CHN",
+          "gold": 40,
+          "silver": 27,
+          "bronze": 24,
+          "total": 91
+        },
+        {
+          "rank": 3,
+          "country": "Japan",
+          "noc": "JPN",
+          "gold": 20,
+          "silver": 12,
+          "bronze": 13,
+          "total": 45
+        },
+        {
+          "rank": 4,
+          "country": "Australia",
+          "noc": "AUS",
+          "gold": 18,
+          "silver": 19,
+          "bronze": 16,
+          "total": 53
+        },
+        {
+          "rank": 5,
+          "country": "France",
+          "noc": "FRA",
+          "gold": 16,
+          "silver": 26,
+          "bronze": 22,
+          "total": 64
+        },
+        {
+          "rank": 6,
+          "country": "Netherlands",
+          "noc": "NED",
+          "gold": 15,
+          "silver": 7,
+          "bronze": 12,
+          "total": 34
+        },
+        {
+          "rank": 7,
+          "country": "Great Britain",
+          "noc": "GBR",
+          "gold": 14,
+          "silver": 22,
+          "bronze": 29,
+          "total": 65
+        },
+        {
+          "rank": 8,
+          "country": "South Korea",
+          "noc": "KOR",
+          "gold": 13,
+          "silver": 9,
+          "bronze": 10,
+          "total": 32
+        },
+        {
+          "rank": 9,
+          "country": "Italy",
+          "noc": "ITA",
+          "gold": 12,
+          "silver": 13,
+          "bronze": 15,
+          "total": 40
+        },
+        {
+          "rank": 10,
+          "country": "Germany",
+          "noc": "GER",
+          "gold": 12,
+          "silver": 13,
+          "bronze": 8,
+          "total": 33
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "format_version": "1.0",
+    "last_updated": "2026-01-06",
+    "total_olympics": 30,
+    "years_covered": "1896-2024",
+    "cancelled_games": [1916, 1940, 1944],
+    "sources": {
+      "primary": "Wikipedia Olympic Medal Tables",
+      "validation": ["Olympedia.org", "Olympics.com"],
+      "data_current_through": "2024-08-11"
+    },
+    "notes": [
+      "Medal counts include doping reallocations through August 2024",
+      "Rankings use total medal count, with gold/silver/bronze as tie-breakers",
+      "Full dataset includes all medal-winning countries per Games"
+    ]
+  },
+  "country_mapping": {
+    "URS": {
+      "name": "Soviet Union",
+      "full_name": "Union of Soviet Socialist Republics",
+      "years": [1952, 1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988],
+      "successor_codes": ["EUN", "RUS"],
+      "notes": "Dissolved December 1991; competed as Unified Team in 1992"
+    },
+    "EUN": {
+      "name": "Unified Team",
+      "full_name": "Unified Team (ex-Soviet republics except Baltics)",
+      "years": [1992],
+      "predecessor_code": "URS",
+      "successor_codes": ["RUS", "UKR", "BLR", "KAZ", "UZB", "GEO", "ARM", "AZE", "KGZ", "TJK", "TKM", "MDA"],
+      "notes": "Transitional team for 1992 Barcelona Olympics only"
+    },
+    "ROC": {
+      "name": "Russian Olympic Committee",
+      "full_name": "Russian Olympic Committee",
+      "years": [2020, 2021],
+      "predecessor_code": "RUS",
+      "successor_code": "AIN",
+      "notes": "Competed under ROC due to doping sanctions 2020-2022"
+    },
+    "AIN": {
+      "name": "Individual Neutral Athletes",
+      "full_name": "Individual Neutral Athletes",
+      "years": [2024],
+      "predecessor_code": "ROC",
+      "notes": "Russian and Belarusian athletes competing neutrally (Ukraine conflict sanctions)"
+    },
+    "GER": {
+      "name": "Germany",
+      "full_name": "Germany",
+      "years": "1896-1936, 1992-present",
+      "related_codes": ["FRG", "GDR", "EUA", "SAA"],
+      "notes": "Unified except 1968-1988 (split as FRG/GDR)"
+    },
+    "FRG": {
+      "name": "West Germany",
+      "full_name": "Federal Republic of Germany",
+      "years": [1968, 1972, 1976, 1980, 1984, 1988],
+      "successor_code": "GER",
+      "notes": "Reunified with East Germany in 1990"
+    },
+    "GDR": {
+      "name": "East Germany",
+      "full_name": "German Democratic Republic",
+      "years": [1968, 1972, 1976, 1980, 1984, 1988],
+      "successor_code": "GER",
+      "notes": "Reunified with West Germany in 1990"
+    },
+    "EUA": {
+      "name": "United Team of Germany",
+      "full_name": "Équipe Unifiée d'Allemagne",
+      "years": [1956, 1960, 1964],
+      "predecessor_code": "GER",
+      "successor_codes": ["FRG", "GDR"],
+      "notes": "Combined East/West German team 1956-1964"
+    },
+    "YUG": {
+      "name": "Yugoslavia",
+      "full_name": "Socialist Federal Republic of Yugoslavia / Federal Republic of Yugoslavia",
+      "years": "1920-1991, 1996-2003",
+      "successor_codes": ["SRB", "CRO", "SLO", "BIH", "MKD", "MNE", "SCG"],
+      "notes": "Broke up 1991-1992; Serbia+Montenegro continued as YUG 1996-2003"
+    },
+    "SCG": {
+      "name": "Serbia and Montenegro",
+      "full_name": "Serbia and Montenegro",
+      "years": [2004, 2005, 2006],
+      "predecessor_code": "YUG",
+      "successor_codes": ["SRB", "MNE"],
+      "notes": "Final union dissolved 2006"
+    },
+    "TCH": {
+      "name": "Czechoslovakia",
+      "full_name": "Czechoslovakia / Czech and Slovak Federative Republic",
+      "years": "1920-1992",
+      "successor_codes": ["CZE", "SVK"],
+      "notes": "Peacefully split January 1, 1993 (Velvet Divorce)"
+    },
+    "ANZ": {
+      "name": "Australasia",
+      "full_name": "Australasia (Australia + New Zealand)",
+      "years": [1908, 1912],
+      "successor_codes": ["AUS", "NZL"],
+      "notes": "Combined team for 2 Olympics only; separated in 1920"
+    }
+  }
+}

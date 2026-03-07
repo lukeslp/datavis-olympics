@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Summer Rings — a rotating spiral of Summer Olympic medal counts from 1896-2024, showing all medal-winning countries for each Games.">
+    <meta property="og:title" content="Summer Rings">
+    <meta property="og:description" content="A rotating spiral of Summer Olympic medal counts from 1896-2024, showing all medal-winning countries for each Games.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dr.eamer.dev/datavis/poems/olympics/">
+    <meta property="og:image" content="https://dr.eamer.dev/datavis/poems/olympics/social.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Summer Rings">
+    <meta name="twitter:description" content="A rotating spiral of Summer Olympic medal counts from 1896-2024, showing all medal-winning countries for each Games.">
+    <meta name="twitter:image" content="https://dr.eamer.dev/datavis/poems/olympics/social.jpg">
+    <base href="/datavis/poems/olympics/">
+    <title>Summer Rings</title>
+    <style>
+        :root {
+            --bg: #f6f2e8;
+            --bg-accent: #e6f0ff;
+            --ink: #1f2a44;
+            --muted: #5b6b7c;
+            --panel: rgba(255, 255, 255, 0.88);
+            --panel-border: rgba(20, 50, 90, 0.12);
+            --shadow: rgba(14, 30, 64, 0.2);
+            --accent-blue: #0b6ef6;
+            --accent-yellow: #f4c300;
+            --accent-red: #e12d2d;
+            --accent-green: #18a04b;
+            --accent-navy: #1e3a8a;
+            --center-shift: 0px;
+            --center-shift-y: 0px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--ink);
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .title {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .title-text {
+            display: flex;
+            flex-direction: column;
+            pointer-events: none;
+        }
+
+        .title h1 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--accent-blue);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .title .subtitle {
+            font-size: 0.625rem;
+            font-weight: 600;
+            color: #7b8a9a;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+            max-width: 12rem;
+        }
+
+        .title-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        #tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(20, 50, 90, 0.12);
+            padding: 0.75rem 1rem;
+            color: var(--ink);
+            font-size: 0.75rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            backdrop-filter: blur(8px);
+            z-index: 20;
+            border-radius: 0.25rem;
+            box-shadow: 0 20px 50px rgba(20, 40, 70, 0.2);
+        }
+
+        #tooltip h3 {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        #tooltip .medals {
+            display: flex;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+            font-size: 0.625rem;
+        }
+
+        #tooltip .medal-count {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        #tooltip .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.25rem 0;
+            color: var(--muted);
+            font-size: 0.625rem;
+        }
+
+        #controls {
+            position: absolute;
+            top: 20vh;
+            left: 0.75rem;
+            bottom: 1.5rem;
+            width: min(12rem, 25%);
+            z-index: 10;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0.35rem 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            backdrop-filter: none;
+        }
+
+        #controls::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        #controls::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #controls::-webkit-scrollbar-thumb {
+            background: rgba(11, 110, 246, 0.3);
+            border-radius: 2px;
+        }
+
+        #controls::-webkit-scrollbar-thumb:hover {
+            background: rgba(11, 110, 246, 0.5);
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: color 0.15s;
+            padding: 0.25rem 0;
+        }
+
+        .filter-label:hover {
+            color: #2f3a4f;
+        }
+
+        .filter-label.active {
+            color: var(--accent-blue);
+        }
+
+        .filter-label::before {
+            content: '▶';
+            font-size: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .filter-section.expanded .filter-label::before {
+            transform: rotate(90deg);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .filter-section.is-collapsible .filter-group {
+            display: none;
+        }
+
+        .filter-section.is-collapsible.expanded .filter-group {
+            display: flex;
+        }
+
+        #country-list .control-btn {
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        #country-list .control-btn:hover,
+        #country-list .control-btn.active {
+            opacity: 1;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: #718295;
+            padding: 0.25rem 0;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            text-align: left;
+            position: relative;
+            padding-left: 0.75rem;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: var(--accent-blue);
+            transition: height 0.15s;
+        }
+
+        .control-btn:hover {
+            color: #102a43;
+        }
+
+        .control-btn.active {
+            color: var(--accent-blue);
+        }
+
+        .control-btn.active::before {
+            height: 100%;
+        }
+
+        .control-btn.toggle-btn {
+            color: #6c7b8d;
+        }
+
+        .control-btn.toggle-btn.is-paused {
+            color: var(--accent-blue);
+        }
+
+        .control-btn.toggle-btn.is-paused::before {
+            height: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            #controls {
+                width: min(14rem, 32%);
+            }
+        }
+
+        @media (max-width: 900px) {
+            #controls {
+                right: 0.5rem;
+                left: auto;
+                top: 20vh;
+                bottom: 1rem;
+                width: min(16rem, 35%);
+            }
+        }
+
+        #year-display {
+            position: absolute;
+            top: calc(50% + var(--center-shift-y));
+            left: calc(50% + var(--center-shift));
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(20, 40, 70, 0.08);
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        body.ready #year-display {
+            opacity: 1;
+        }
+
+        /* Icon buttons */
+        .icon-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(20, 50, 90, 0.2);
+            color: #36506b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(244, 195, 0, 0.25);
+            border-color: var(--accent-yellow);
+            transform: scale(1.1);
+        }
+
+        .pause-btn.is-paused {
+            color: var(--accent-blue);
+            border-color: rgba(11, 110, 246, 0.35);
+        }
+
+        .filter-btn {
+            display: none;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 30, 50, 0.35);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(20, 50, 90, 0.16);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(15, 30, 55, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            margin: 0 0 1rem 0;
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .modal p {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #3f4f5f;
+            margin-bottom: 1rem;
+        }
+
+        .modal a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .modal a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .modal .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(11, 110, 246, 0.08);
+            border: 1px solid rgba(11, 110, 246, 0.2);
+            border-radius: 0.25rem;
+        }
+
+        .modal .stat-item {
+            text-align: center;
+        }
+
+        .modal .stat-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+        }
+
+        .modal .stat-label {
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7c8d;
+            margin-top: 0.25rem;
+        }
+
+        .modal .links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(20, 50, 90, 0.1);
+            font-size: 0.75rem;
+        }
+
+        .close-btn {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(11, 110, 246, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(11, 110, 246, 0.3);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(11, 110, 246, 0.2);
+            border-color: var(--accent-blue);
+            color: #0b1f3a;
+        }
+
+        @media (max-width: 720px) {
+            html, body {
+                height: 100%;
+            }
+
+            .title {
+                top: 1rem;
+                left: 1rem;
+                right: 1rem;
+            }
+
+            .title h1 {
+                font-size: 1.4rem;
+            }
+
+            .title .subtitle {
+                font-size: 0.55rem;
+                max-width: none;
+            }
+
+            #controls {
+                left: 0.75rem;
+                right: 0.75rem;
+                top: 4.5rem;
+                bottom: auto;
+                width: auto;
+                max-height: 60vh;
+                padding: 0.75rem;
+                background: rgba(255, 255, 255, 0.92);
+                border: 1px solid rgba(20, 50, 90, 0.16);
+                border-radius: 0.75rem;
+                box-shadow: 0 12px 30px rgba(15, 30, 55, 0.18);
+                backdrop-filter: blur(12px);
+                overflow-y: auto;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(-6px);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+
+            #controls.is-mobile-open {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+
+            .filter-btn {
+                display: flex;
+            }
+
+            #year-display {
+                font-size: 1.3rem;
+            }
+
+            #tooltip {
+                font-size: 0.7rem;
+                max-width: 220px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #controls {
+                max-height: 40vh;
+                padding: 0.65rem;
+            }
+
+            .control-btn {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div class="title">
+        <div class="title-text">
+            <h1>Summer<br>Rings</h1>
+            <div class="subtitle">Olympic medals 1896-2024</div>
+        </div>
+        <div class="title-actions">
+            <button class="icon-btn info-btn" id="info-btn" aria-label="Open information">?</button>
+            <button class="icon-btn pause-btn" id="pause-toggle" aria-label="Pause rotation">||</button>
+            <button class="icon-btn filter-btn" id="filter-toggle" aria-label="Open filters" aria-expanded="false" aria-controls="controls">≡</button>
+        </div>
+    </div>
+
+    <div id="tooltip"></div>
+    <div id="year-display">1896</div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h2>Summer Rings</h2>
+            <p>A rotating spiral visualization of Summer Olympic medal counts from 1896 to 2024 (Winter Games are not included). Each ring represents one Summer Games, with cancelled years shown as dimmed rings. Arc segments are sized proportionally to each country's total medal count. All medal-winning countries for that Games are included (counts vary by year), while the filters highlight featured countries plus an expandable full list.</p>
+
+            <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">30</div>
+                <div class="stat-label">Summer Games</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">1,433</div>
+                <div class="stat-label">Medal entries</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">159</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Cancelled Games</div>
+            </div>
+            </div>
+
+            <p><strong>Interaction:</strong> Hover over segments for medal counts. Click any segment to filter by that country. Click the center to pause/resume rotation. Scroll to zoom in/out (pinch on mobile). Historical groupings combine USSR/Russia and East/West Germany.</p>
+
+            <p><strong>Cancelled Games:</strong> 1916, 1940, 1944.</p>
+
+            <p><strong>Data Source:</strong> Wikipedia Olympic medal tables, compiled from the IOC database. All medal-winning countries per Games, ranked by total medals. Mixed Team (early Games) and Individual Neutral Athletes (2024) are not included in this dataset.</p>
+
+            <div class="links">
+                <a href="https://dr.eamer.dev" target="_blank" rel="noopener">Luke Steuber</a>
+                <span style="color: #6b7c8d;">|</span>
+                <a href="https://dr.eamer.dev/datavis/poems" target="_blank" rel="noopener">More Visualizations</a>
+            </div>
+
+            <button class="close-btn" id="close-modal">Close</button>
+        </div>
+    </div>
+
+    <div id="controls">
+        <div class="filter-section">
+            <div class="filter-group">
+                <button class="control-btn active" data-filter="all">All Countries</button>
+            </div>
+        </div>
+
+        <div class="filter-section is-collapsible expanded" data-default-open="true">
+            <div class="filter-label">Featured countries</div>
+            <div class="filter-group country-list" id="featured-country-list"></div>
+        </div>
+
+        <div class="filter-section is-collapsible" data-default-open="false">
+            <div class="filter-label">All countries</div>
+            <div class="filter-group country-list" id="all-country-list"></div>
+        </div>
+    </div>
+
+    <script src="olympic_data_inline.js"></script>
+    <script>
+// Olympic medal data loaded from olympic_data_inline.js
+
+const OLYMPIC_RING_COLORS = {
+    blue: "#0077C8",
+    yellow: "#D9A400",
+    navy: "#1e3a8a",
+    green: "#009F3D",
+    red: "#DF0024"
+};
+
+const MEDAL_RANK_COLORS = {
+    gold: "#D4AF37",
+    silver: "#C0C0C0",
+    bronze: "#B87333"
+};
+
+const COUNTRY_COLORS = {
+    // Major Olympic powers
+    "USA": OLYMPIC_RING_COLORS.blue,
+    "CHN": OLYMPIC_RING_COLORS.red,
+    "GBR": OLYMPIC_RING_COLORS.green,
+    "RUS": OLYMPIC_RING_COLORS.red,
+    "URS": OLYMPIC_RING_COLORS.red,
+    "EUN": OLYMPIC_RING_COLORS.red,
+    "GER": OLYMPIC_RING_COLORS.yellow,
+    "FRG": OLYMPIC_RING_COLORS.yellow,
+    "GDR": OLYMPIC_RING_COLORS.red,
+    "EUA": OLYMPIC_RING_COLORS.yellow,
+    "FRA": OLYMPIC_RING_COLORS.blue,
+    "ITA": OLYMPIC_RING_COLORS.green,
+    "JPN": OLYMPIC_RING_COLORS.red,
+    "AUS": OLYMPIC_RING_COLORS.green,
+    "KOR": OLYMPIC_RING_COLORS.blue,
+    "NED": OLYMPIC_RING_COLORS.yellow,
+
+    // European nations
+    "GRE": OLYMPIC_RING_COLORS.blue,
+    "SWE": OLYMPIC_RING_COLORS.yellow,
+    "FIN": OLYMPIC_RING_COLORS.blue,
+    "HUN": OLYMPIC_RING_COLORS.green,
+    "POL": OLYMPIC_RING_COLORS.red,
+    "ESP": OLYMPIC_RING_COLORS.yellow,
+    "ROU": OLYMPIC_RING_COLORS.yellow,
+    "TCH": OLYMPIC_RING_COLORS.blue,
+    "BEL": OLYMPIC_RING_COLORS.yellow,
+    "NOR": OLYMPIC_RING_COLORS.red,
+    "DEN": OLYMPIC_RING_COLORS.red,
+    "SUI": OLYMPIC_RING_COLORS.red,
+    "AUT": OLYMPIC_RING_COLORS.red,
+    "BUL": OLYMPIC_RING_COLORS.green,
+    "UKR": OLYMPIC_RING_COLORS.blue,
+    "SRB": OLYMPIC_RING_COLORS.red,
+    "YUG": OLYMPIC_RING_COLORS.red,
+
+    // Other nations
+    "CAN": OLYMPIC_RING_COLORS.red,
+    "CUB": OLYMPIC_RING_COLORS.red,
+    "TUR": OLYMPIC_RING_COLORS.red,
+    "RSA": OLYMPIC_RING_COLORS.green,
+    "NZL": "#0063A3",
+
+    "default": OLYMPIC_RING_COLORS.blue
+};
+
+const OLYMPIC_PALETTE = [
+    "#0077C8",
+    "#005EA1",
+    "#2FA2E2",
+    "#D9A400",
+    "#B98A00",
+    "#F2C84B",
+    "#1e3a8a",
+    "#2847a5",
+    "#009F3D",
+    "#007A30",
+    "#33B060",
+    "#DF0024",
+    "#B8001E",
+    "#F14A4A"
+];
+
+const FEATURED_COUNTRIES = [
+    "USA", "CAN", "CUB",
+    "RUS", "GER", "GBR", "FRA", "ITA", "HUN", "SWE", "NED", "FIN", "POL", "ROU", "ESP", "GRE", "NOR", "DEN", "SUI", "AUT", "BEL", "BUL", "TCH", "UKR", "SRB", "TUR",
+    "CHN", "JPN", "KOR",
+    "AUS", "NZL",
+    "RSA"
+];
+
+const COUNTRY_NAMES = {
+    "AFG": "Afghanistan",
+    "ALB": "Albania",
+    "ALG": "Algeria",
+    "ARG": "Argentina",
+    "ARM": "Armenia",
+    "ANZ": "Australasia",
+    "AUS": "Australia",
+    "AUT": "Austria",
+    "AZE": "Azerbaijan",
+    "BAH": "Bahamas",
+    "BRN": "Bahrain",
+    "BAR": "Barbados",
+    "BLR": "Belarus",
+    "BEL": "Belgium",
+    "BER": "Bermuda",
+    "BOH": "Bohemia",
+    "BOT": "Botswana",
+    "BRA": "Brazil",
+    "BWI": "British West Indies",
+    "BUL": "Bulgaria",
+    "BUR": "Burkina Faso",
+    "BDI": "Burundi",
+    "CMR": "Cameroon",
+    "CAN": "Canada",
+    "CPV": "Cape Verde",
+    "CEY": "Ceylon",
+    "CHI": "Chile",
+    "CHN": "China",
+    "TPE": "Chinese Taipei",
+    "COL": "Colombia",
+    "CRC": "Costa Rica",
+    "CRO": "Croatia",
+    "CUB": "Cuba",
+    "CYP": "Cyprus",
+    "CZE": "Czech Republic",
+    "TCH": "Czechoslovakia",
+    "DEN": "Denmark",
+    "DJI": "Djibouti",
+    "DMA": "Dominica",
+    "DOM": "Dominican Republic",
+    "GDR": "East Germany",
+    "ECU": "Ecuador",
+    "EGY": "Egypt",
+    "ERI": "Eritrea",
+    "EST": "Estonia",
+    "ETH": "Ethiopia",
+    "FIJ": "Fiji",
+    "FIN": "Finland",
+    "FRA": "France",
+    "GAB": "Gabon",
+    "GEO": "Georgia",
+    "GER": "Germany",
+    "GHA": "Ghana",
+    "GBR": "Great Britain",
+    "GRE": "Greece",
+    "GRN": "Grenada",
+    "GUA": "Guatemala",
+    "GUY": "Guyana",
+    "HAI": "Haiti",
+    "HKG": "Hong Kong",
+    "HUN": "Hungary",
+    "ISL": "Iceland",
+    "IOA": "Independent Olympic Athletes",
+    "IOP": "Independent Olympic Participants",
+    "IND": "India",
+    "INA": "Indonesia",
+    "IRI": "Iran",
+    "IRQ": "Iraq",
+    "IRL": "Ireland",
+    "ISR": "Israel",
+    "ITA": "Italy",
+    "CIV": "Ivory Coast",
+    "JAM": "Jamaica",
+    "JPN": "Japan",
+    "JOR": "Jordan",
+    "KAZ": "Kazakhstan",
+    "KEN": "Kenya",
+    "KOS": "Kosovo",
+    "KUW": "Kuwait",
+    "KGZ": "Kyrgyzstan",
+    "LAT": "Latvia",
+    "LBN": "Lebanon",
+    "LTU": "Lithuania",
+    "LUX": "Luxembourg",
+    "MKD": "Macedonia",
+    "MAS": "Malaysia",
+    "MRI": "Mauritius",
+    "MEX": "Mexico",
+    "MDA": "Moldova",
+    "MGL": "Mongolia",
+    "MNE": "Montenegro",
+    "MAR": "Morocco",
+    "MOZ": "Mozambique",
+    "NAM": "Namibia",
+    "NED": "Netherlands",
+    "AHO": "Netherlands Antilles",
+    "NZL": "New Zealand",
+    "NIG": "Niger",
+    "NGR": "Nigeria",
+    "PRK": "North Korea",
+    "NOR": "Norway",
+    "PAK": "Pakistan",
+    "PAN": "Panama",
+    "PAR": "Paraguay",
+    "PER": "Peru",
+    "PHI": "Philippines",
+    "POL": "Poland",
+    "POR": "Portugal",
+    "PUR": "Puerto Rico",
+    "QAT": "Qatar",
+    "EOR": "Refugee Olympic Team",
+    "ROU": "Romania",
+    "RUS": "Russia",
+    "RU1": "Russian Empire",
+    "LCA": "Saint Lucia",
+    "SAM": "Samoa",
+    "SMR": "San Marino",
+    "KSA": "Saudi Arabia",
+    "SEN": "Senegal",
+    "SRB": "Serbia",
+    "SCG": "Serbia and Montenegro",
+    "SGP": "Singapore",
+    "SVK": "Slovakia",
+    "SLO": "Slovenia",
+    "RSA": "South Africa",
+    "KOR": "South Korea",
+    "URS": "Soviet Union",
+    "ESP": "Spain",
+    "SRI": "Sri Lanka",
+    "SUD": "Sudan",
+    "SUR": "Suriname",
+    "SWE": "Sweden",
+    "SUI": "Switzerland",
+    "SYR": "Syria",
+    "TJK": "Tajikistan",
+    "TAN": "Tanzania",
+    "THA": "Thailand",
+    "TOG": "Togo",
+    "TGA": "Tonga",
+    "TTO": "Trinidad and Tobago",
+    "TUN": "Tunisia",
+    "TUR": "Turkey",
+    "TKM": "Turkmenistan",
+    "UGA": "Uganda",
+    "UKR": "Ukraine",
+    "EUN": "Unified Team",
+    "UAE": "United Arab Emirates",
+    "UAR": "United Arab Republic",
+    "USA": "United States",
+    "EUA": "United Team of Germany",
+    "URU": "Uruguay",
+    "UZB": "Uzbekistan",
+    "VEN": "Venezuela",
+    "VIE": "Vietnam",
+    "ISV": "Virgin Islands",
+    "FRG": "West Germany",
+    "YUG": "Yugoslavia",
+    "ZAM": "Zambia",
+    "ZIM": "Zimbabwe",
+};
+
+function getCountryName(code) {
+    return COUNTRY_NAMES[code] || code;
+}
+
+function pickOlympicColor(key) {
+    let hash = 0;
+    for (let i = 0; i < key.length; i += 1) {
+        hash = (hash << 5) - hash + key.charCodeAt(i);
+        hash |= 0;
+    }
+    const index = Math.abs(hash) % OLYMPIC_PALETTE.length;
+    return OLYMPIC_PALETTE[index];
+}
+
+const MEDAL_GROUPS = {
+    RUS: new Set(["RUS", "URS", "EUN"]),
+    GER: new Set(["GER", "FRG", "GDR", "EUA"])
+};
+
+function getMedalGroup(code) {
+    if (MEDAL_GROUPS.RUS.has(code)) return "RUS";
+    if (MEDAL_GROUPS.GER.has(code)) return "GER";
+    return code;
+}
+
+function computeTopMedalGroups() {
+    const totals = {};
+    OLYMPIC_DATA.forEach(row => {
+        const group = getMedalGroup(row.country);
+        if (!totals[group]) totals[group] = 0;
+        totals[group] += row.gold + row.silver + row.bronze;
+    });
+    return Object.entries(totals).sort((a, b) => b[1] - a[1]);
+}
+
+const MEDAL_GROUP_COLORS = (() => {
+    const ranking = computeTopMedalGroups().slice(0, 3);
+    const order = ["gold", "silver", "bronze"];
+    const colors = {};
+    ranking.forEach(([group], index) => {
+        colors[group] = MEDAL_RANK_COLORS[order[index]];
+    });
+    return colors;
+})();
+
+function resolveCountryColor(code) {
+    const group = getMedalGroup(code);
+    if (MEDAL_GROUP_COLORS[group]) return MEDAL_GROUP_COLORS[group];
+    return COUNTRY_COLORS[code] || pickOlympicColor(code);
+}
+
+function getAllCountries() {
+    const unique = new Set(OLYMPIC_DATA.map(d => d.country));
+    return Array.from(unique).sort((a, b) => getCountryName(a).localeCompare(getCountryName(b)));
+}
+
+function createCountryButton(code) {
+    const btn = document.createElement('button');
+    btn.className = 'control-btn';
+    btn.dataset.filter = code;
+    btn.textContent = getCountryName(code);
+    return btn;
+}
+
+function renderCountryList() {
+    const featuredEl = document.getElementById('featured-country-list');
+    const allEl = document.getElementById('all-country-list');
+    const featured = FEATURED_COUNTRIES.slice().sort((a, b) => getCountryName(a).localeCompare(getCountryName(b)));
+    const allCountries = getAllCountries();
+
+    if (featuredEl) {
+        featuredEl.innerHTML = '';
+        featured.forEach(code => {
+            featuredEl.appendChild(createCountryButton(code));
+        });
+    }
+
+    if (allEl) {
+        allEl.innerHTML = '';
+        allCountries.forEach(code => {
+            allEl.appendChild(createCountryButton(code));
+        });
+    }
+}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('tooltip');
+const yearDisplay = document.getElementById('year-display');
+let currentFilter = 'all';
+let segments = [];
+let hoveredSegment = null;
+let rotationTime = 0;
+let rotationPaused = false;
+let zoom = 1.15;
+let hasUserZoomed = false;
+let panX = 0;
+let panY = 0;
+let spiralBaseRadius = 0;
+let backgroundGradient = null;
+let isMobileView = false;
+let ringThickness = 14;
+let ringGapSize = 2;
+let lastRenderTime = 0;
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    isMobileView = canvas.width <= 720;
+    backgroundGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    backgroundGradient.addColorStop(0, '#f7f4ec');
+    backgroundGradient.addColorStop(1, '#e6f0ff');
+    if (!hasUserZoomed) {
+        zoom = isMobileView ? 2.8 : 1.77;
+    }
+    const centerShift = getCenterShift();
+    document.documentElement.style.setProperty('--center-shift', `${centerShift}px`);
+    document.documentElement.style.setProperty('--center-shift-y', `${getCenterShiftY()}px`);
+    document.querySelectorAll('.filter-section.is-collapsible').forEach(section => {
+        const defaultOpen = section.dataset.defaultOpen === 'true';
+        if (isMobileView) {
+            if (!section.dataset.userToggled) {
+                section.classList.remove('expanded');
+            }
+            return;
+        }
+        if (!section.dataset.userToggled) {
+            section.classList.toggle('expanded', defaultOpen);
+        }
+    });
+    document.body.classList.add('ready');
+    generateSpiral();
+}
+
+const ROTATION_SPEED = 0.00225;
+const MAX_SPEED_FACTOR = 1.9;
+const MIN_SPEED_FACTOR = 0.6;
+const CANCELLED_GAMES = {
+    1916: 'World War I',
+    1940: 'World War II',
+    1944: 'World War II'
+};
+const CANCELLED_YEARS = Object.keys(CANCELLED_GAMES).map(Number);
+const CANCELLED_COLOR = '#1f1f1f';
+
+function getCenterThreshold() {
+    return Math.max(spiralBaseRadius, 35);
+}
+
+function getCenterShift() {
+    if (canvas.width <= 720) return 0;
+    const controls = document.getElementById('controls');
+    if (!controls) return 0;
+    const rect = controls.getBoundingClientRect();
+    if (!rect.width) return 0;
+    const gutter = 24;
+    const isLeft = rect.left < canvas.width / 2;
+    if (isLeft) {
+        const startX = Math.min(canvas.width, rect.right + gutter);
+        const endX = canvas.width;
+        return (startX + endX) / 2 - canvas.width / 2;
+    }
+    const startX = 0;
+    const endX = Math.max(0, rect.left - gutter);
+    return (startX + endX) / 2 - canvas.width / 2;
+}
+
+function getCenterPoint() {
+    const shiftFactor = getCenterShift();
+    const shiftY = getCenterShiftY();
+    return {
+        x: canvas.width / 2 + shiftFactor,
+        y: canvas.height / 2 + shiftY
+    };
+}
+
+function getCenterShiftY() {
+    return isMobileView ? canvas.height * 0.07 : 0;
+}
+
+function yearSpeedFactor(year, minYear, maxYear) {
+    if (maxYear === minYear) return 1;
+    const ratio = (year - minYear) / (maxYear - minYear);
+    return MIN_SPEED_FACTOR + ratio * (MAX_SPEED_FACTOR - MIN_SPEED_FACTOR);
+}
+
+function generateSpiral() {
+    segments = [];
+    const { x: centerX, y: centerY } = getCenterPoint();
+
+    // Get unique years (including cancelled Games)
+    const years = [...new Set([...OLYMPIC_DATA.map(d => d.year), ...CANCELLED_YEARS])].sort();
+
+    // Calculate responsive sizing to fit viewport
+    const padding = canvas.width <= 720 ? 60 : 100;
+    const availableWidth = canvas.width - padding * 2;
+    const availableHeight = canvas.height - padding * 2;
+    const maxDimension = Math.min(availableWidth, availableHeight);
+
+    // Calculate spiral parameters to fit all years within maxRadius
+    const ringGap = isMobileView ? 2 : 6;
+    let thickness = 14;
+    const numYears = years.length;
+    const minYear = years[0];
+    const maxYear = years[years.length - 1];
+
+    // Account for baseRadius in the calculation
+    // Final ring will be at: baseRadius + (numYears - 1) * radiusStep
+    // This must equal maxDimension / 2 - thickness
+    const maxRadius = (maxDimension / 2 - thickness) * (isMobileView ? 0.9 : 1);
+    const baseRadius = maxRadius * 0.18; // Start at 18% of max radius
+    spiralBaseRadius = baseRadius;
+    const radiusStep = (maxRadius - baseRadius) / (numYears - 1);
+    thickness = Math.max(10, radiusStep - ringGap);
+    ringThickness = thickness;
+    ringGapSize = ringGap;
+
+    years.forEach((year, yearIndex) => {
+        const yearData = OLYMPIC_DATA.filter(d => d.year === year);
+        const sortedYearData = [...yearData].sort((a, b) => a.country.localeCompare(b.country));
+        const radius = baseRadius + yearIndex * radiusStep;
+        const speedFactor = yearSpeedFactor(year, minYear, maxYear);
+
+        if (CANCELLED_YEARS.includes(year)) {
+            segments.push({
+                year,
+                country: 'Cancelled',
+                cancelled: true,
+                gold: 0,
+                silver: 0,
+                bronze: 0,
+                total: 0,
+                centerX,
+                centerY,
+                radius,
+                speedFactor,
+                startAngle: 0,
+                endAngle: Math.PI * 2,
+                color: CANCELLED_COLOR
+            });
+            return;
+        }
+
+        // Calculate total medals for this year to determine arc sizes
+        const totalMedals = sortedYearData.reduce((sum, d) => sum + d.gold + d.silver + d.bronze, 0);
+        if (totalMedals === 0) {
+            return;
+        }
+
+        let startAngle = 0;
+        sortedYearData.forEach(data => {
+            const medals = data.gold + data.silver + data.bronze;
+            const arcSize = (medals / totalMedals) * Math.PI * 2;
+
+            const color = resolveCountryColor(data.country);
+
+            segments.push({
+                year,
+                country: data.country,
+                gold: data.gold,
+                silver: data.silver,
+                bronze: data.bronze,
+                total: medals,
+                centerX,
+                centerY,
+                radius,
+                speedFactor,
+                startAngle,
+                endAngle: startAngle + arcSize,
+                color
+            });
+
+            startAngle += arcSize;
+        });
+    });
+}
+
+function drawSegment(seg, highlight = false) {
+    let matchesFilter = false;
+
+    if (seg.cancelled) {
+        matchesFilter = true;
+    } else if (currentFilter === 'all') {
+        matchesFilter = true;
+    } else {
+        // Country-specific filtering with historical groupings
+        matchesFilter = seg.country === currentFilter;
+
+        // Group Russia/USSR together
+        if (currentFilter === 'RUS' && (seg.country === 'URS' || seg.country === 'RUS' || seg.country === 'EUN')) {
+            matchesFilter = true;
+        }
+
+        // Group all Germany variants together
+        if (currentFilter === 'GER' && (seg.country === 'GER' || seg.country === 'FRG' || seg.country === 'GDR' || seg.country === 'EUA')) {
+            matchesFilter = true;
+        }
+    }
+
+    if (!matchesFilter) {
+        ctx.globalAlpha = 0.25;
+    } else {
+        ctx.globalAlpha = 1;
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle, color, gold, silver, bronze } = seg;
+    const thickness = ringThickness;
+    const ringRotation = rotationTime * seg.speedFactor;
+
+    if (seg.cancelled) {
+        ctx.save();
+        ctx.globalAlpha = isMobileView ? 0.35 : 0.55;
+        ctx.fillStyle = color;
+        ctx.shadowColor = 'rgba(15, 23, 42, 0.45)';
+        ctx.shadowBlur = isMobileView ? 8 : 16;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle + ringRotation, endAngle + ringRotation);
+        ctx.arc(centerX, centerY, radius - thickness, endAngle + ringRotation, startAngle + ringRotation, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+        return;
+    }
+
+    // Draw arc
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle + ringRotation, endAngle + ringRotation);
+    ctx.arc(centerX, centerY, radius - thickness, endAngle + ringRotation, startAngle + ringRotation, true);
+    ctx.closePath();
+
+    if (highlight) {
+        ctx.fillStyle = shadeColor(color, 18);
+        ctx.shadowColor = shadeColor(color, 6);
+        ctx.shadowBlur = isMobileView ? 4 : 12;
+    } else if (isMobileView) {
+        ctx.fillStyle = color;
+        ctx.shadowBlur = 0;
+    } else {
+        // Gradient based on medal distribution
+        const gradient = ctx.createRadialGradient(centerX, centerY, radius - thickness, centerX, centerY, radius);
+        gradient.addColorStop(0, shadeColor(color, -20));
+        gradient.addColorStop(1, color);
+        ctx.fillStyle = gradient;
+        ctx.shadowBlur = 0;
+    }
+
+    ctx.fill();
+    if (ringGapSize > 0) {
+        ctx.lineWidth = ringGapSize / zoom;
+        ctx.strokeStyle = 'rgba(246, 242, 232, 0.9)';
+        ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+function shadeColor(color, percent) {
+    const num = parseInt(color.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
+    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+    return `rgb(${R},${G},${B})`;
+}
+
+function pointInSegment(px, py, seg) {
+    const dx = px - seg.centerX;
+    const dy = py - seg.centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) - rotationTime * seg.speedFactor;
+    const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+    const thickness = ringThickness;
+    const inRadius = dist >= seg.radius - thickness && dist <= seg.radius;
+
+    let start = seg.startAngle;
+    let end = seg.endAngle;
+    if (start < 0) start += Math.PI * 2;
+    if (end < 0) end += Math.PI * 2;
+
+    const inAngle = normalizedAngle >= start && normalizedAngle <= end;
+
+    return inRadius && inAngle;
+}
+
+function render(time = 0) {
+    if (isMobileView && time - lastRenderTime < 33) {
+        requestAnimationFrame(render);
+        return;
+    }
+    lastRenderTime = time;
+    if (!rotationPaused) {
+        rotationTime += ROTATION_SPEED;
+    }
+
+    ctx.fillStyle = backgroundGradient || '#f6f2e8';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Apply zoom and pan transform
+    ctx.save();
+    const center = getCenterPoint();
+    ctx.translate(center.x + panX, center.y + panY);
+    ctx.scale(zoom, zoom);
+    ctx.translate(-center.x, -center.y);
+
+    // Radial grid - dynamic based on segments
+    if (segments.length > 0) {
+        ctx.strokeStyle = 'rgba(20, 40, 70, 0.06)';
+        ctx.lineWidth = 1 / zoom;
+        const minRadius = segments[0]?.radius || 0;
+        const maxRadius = segments[segments.length - 1]?.radius || 0;
+        const radiusStep = (maxRadius - minRadius) / (isMobileView ? 16 : 30);
+
+        for (let r = minRadius; r <= maxRadius; r += radiusStep) {
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, r, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+
+    // Draw segments (back to front)
+    const sortedSegments = [...segments].sort((a, b) => a.radius - b.radius);
+
+    for (const seg of sortedSegments) {
+        drawSegment(seg, seg === hoveredSegment);
+    }
+
+    ctx.restore();
+
+    requestAnimationFrame(render);
+}
+
+// Transform screen coordinates to canvas coordinates accounting for zoom/pan
+function screenToCanvas(screenX, screenY) {
+    const center = getCenterPoint();
+    const centerX = center.x;
+    const centerY = center.y;
+
+    // Remove pan offset
+    const x = screenX - panX;
+    const y = screenY - panY;
+
+    // Remove zoom (scale from center)
+    const canvasX = centerX + (x - centerX) / zoom;
+    const canvasY = centerY + (y - centerY) / zoom;
+
+    return { x: canvasX, y: canvasY };
+}
+
+canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+    const {x: mx, y: my} = screenToCanvas(screenX, screenY);
+
+    hoveredSegment = null;
+    for (const seg of segments) {
+        if (pointInSegment(mx, my, seg)) {
+            hoveredSegment = seg;
+            break;
+        }
+    }
+
+    canvas.style.cursor = hoveredSegment ? 'pointer' : 'default';
+
+    if (hoveredSegment) {
+        const seg = hoveredSegment;
+        yearDisplay.textContent = seg.year;
+
+        tooltip.style.opacity = '1';
+        tooltip.style.left = Math.min(e.clientX + 15, window.innerWidth - 230) + 'px';
+        tooltip.style.top = Math.min(e.clientY + 15, window.innerHeight - 180) + 'px';
+        if (seg.cancelled) {
+            const reason = CANCELLED_GAMES[seg.year] || 'Cancelled';
+            tooltip.innerHTML = `
+                <h3 style="color: ${seg.color}">Cancelled - ${seg.year}</h3>
+                <div class="stat"><span>Reason</span><span>${reason}</span></div>
+            `;
+        } else {
+            tooltip.innerHTML = `
+                <h3 style="color: ${seg.color}">${getCountryName(seg.country)} - ${seg.year}</h3>
+                <div class="medals">
+                    <div class="medal-count"><span style="color: #ffd700">🥇</span> ${seg.gold}</div>
+                    <div class="medal-count"><span style="color: #c0c0c0">🥈</span> ${seg.silver}</div>
+                    <div class="medal-count"><span style="color: #cd7f32">🥉</span> ${seg.bronze}</div>
+                </div>
+                <div class="stat"><span>Total Medals</span><span>${seg.total}</span></div>
+            `;
+        }
+    } else {
+        tooltip.style.opacity = '0';
+        yearDisplay.textContent = '1896';
+    }
+});
+
+// Click segment to filter
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+    const {x: mx, y: my} = screenToCanvas(screenX, screenY);
+
+    const center = getCenterPoint();
+    const centerX = center.x;
+    const centerY = center.y;
+    const centerThreshold = getCenterThreshold();
+    const centerDist = Math.hypot(mx - centerX, my - centerY);
+    if (centerDist < centerThreshold) {
+        setRotationPaused(!rotationPaused);
+        return;
+    }
+
+    let clickedSegment = null;
+    for (const seg of segments) {
+        if (pointInSegment(mx, my, seg)) {
+            clickedSegment = seg;
+            break;
+        }
+    }
+
+    if (clickedSegment) {
+        if (clickedSegment.cancelled) {
+            return;
+        }
+        // Update filter to clicked country
+        currentFilter = clickedSegment.country;
+        // Update active button
+        document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+
+        const matchingBtn = Array.from(document.querySelectorAll('.control-btn'))
+            .find(btn => {
+                const filter = btn.dataset.filter;
+                // Check if this button matches (including historical groupings)
+                if (filter === clickedSegment.country) return true;
+                if (filter === 'RUS' && (clickedSegment.country === 'URS' || clickedSegment.country === 'RUS' || clickedSegment.country === 'EUN')) return true;
+                if (filter === 'GER' && (clickedSegment.country === 'GER' || clickedSegment.country === 'FRG' || clickedSegment.country === 'GDR' || clickedSegment.country === 'EUA')) return true;
+                return false;
+            });
+        if (matchingBtn) {
+            matchingBtn.classList.add('active');
+            // Expand the section containing this button
+            const section = matchingBtn.closest('.filter-section');
+            if (section && !section.classList.contains('expanded')) {
+                section.classList.add('expanded');
+            }
+        }
+    } else {
+        // Clicked empty space - reset to "All"
+        currentFilter = 'all';
+        document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+        const allBtn = document.querySelector('.control-btn[data-filter="all"]');
+        if (allBtn) {
+            allBtn.classList.add('active');
+        }
+    }
+});
+
+// Zoom with mouse wheel
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomSpeed = 0.1;
+    const delta = e.deltaY > 0 ? -zoomSpeed : zoomSpeed;
+
+    const newZoom = Math.max(0.5, Math.min(3, zoom + delta));
+    zoom = newZoom;
+    hasUserZoomed = true;
+}, { passive: false });
+
+// Touch pinch zoom
+let initialDistance = 0;
+let initialZoom = 1;
+
+canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initialDistance = Math.sqrt(dx * dx + dy * dy);
+        initialZoom = zoom;
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const scale = distance / initialDistance;
+        zoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+        hasUserZoomed = true;
+    }
+}, { passive: false });
+
+renderCountryList();
+
+const controls = document.getElementById('controls');
+const filterToggle = document.getElementById('filter-toggle');
+
+function setMobileFiltersOpen(open) {
+    if (!controls) return;
+    controls.classList.toggle('is-mobile-open', open);
+    if (filterToggle) {
+        filterToggle.setAttribute('aria-expanded', open.toString());
+    }
+}
+
+document.querySelectorAll('.filter-section.is-collapsible .filter-label').forEach(label => {
+    label.addEventListener('click', () => {
+        const section = label.closest('.filter-section');
+        if (!section) return;
+        section.classList.toggle('expanded');
+        section.dataset.userToggled = 'true';
+    });
+});
+
+if (filterToggle) {
+    filterToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!controls) return;
+        const isOpen = controls.classList.contains('is-mobile-open');
+        setMobileFiltersOpen(!isOpen);
+    });
+}
+
+document.addEventListener('click', (e) => {
+    if (!controls || !filterToggle) return;
+    if (window.innerWidth > 720) return;
+    if (!controls.classList.contains('is-mobile-open')) return;
+    if (controls.contains(e.target) || filterToggle.contains(e.target)) return;
+    setMobileFiltersOpen(false);
+});
+
+// Country button click handlers
+document.querySelectorAll('.control-btn').forEach(btn => {
+    if (btn.dataset.action) return;
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.filter;
+        if (window.innerWidth <= 720) {
+            setMobileFiltersOpen(false);
+        }
+    });
+});
+
+const pauseToggle = document.getElementById('pause-toggle');
+function setRotationPaused(paused) {
+    rotationPaused = paused;
+    if (pauseToggle) {
+        pauseToggle.textContent = paused ? '▶' : '||';
+        pauseToggle.classList.toggle('is-paused', paused);
+        pauseToggle.setAttribute('aria-label', paused ? 'Resume rotation' : 'Pause rotation');
+    }
+}
+
+if (pauseToggle) {
+    pauseToggle.addEventListener('click', () => {
+        setRotationPaused(!rotationPaused);
+    });
+}
+
+
+setRotationPaused(false);
+
+
+// Modal handlers
+const modalOverlay = document.getElementById('modal-overlay');
+const infoBtn = document.getElementById('info-btn');
+const closeBtn = document.getElementById('close-modal');
+
+infoBtn.addEventListener('click', () => {
+    modalOverlay.classList.add('open');
+});
+
+closeBtn.addEventListener('click', () => {
+    modalOverlay.classList.remove('open');
+});
+
+modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('open');
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+        modalOverlay.classList.remove('open');
+    }
+});
+
+resize();
+window.addEventListener('resize', () => {
+    resize();
+    if (window.innerWidth > 720) {
+        setMobileFiltersOpen(false);
+    }
+});
+render();
+    </script>
+</body>
+</html>
